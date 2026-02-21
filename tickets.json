@@ -1,0 +1,99 @@
+{
+  "roster_valorant": {
+    "coach": "<@244405860334436352>",
+    "high": [
+      "<@1372005398378451004>",
+      "<@417371455483936778>"
+    ],
+    "tryhard": [
+      "<@244405860334436352>",
+      "<@639964552540323852>",
+      "<@677936071056556052>",
+      "<@1424546716295757845>",
+      "<@1152604645840134155>"
+    ],
+    "academy": [
+      "<@682224807365967874>",
+      "<@464454744338071552>",
+      "<@1249461877474463816>",
+      "<@696054727481229312>"
+    ],
+    "chill": [
+      "<@1330941605791928404>",
+      "<@1370779558902497410>",
+      "<@827582409910386759>"
+    ],
+    "messageId": "1474345403859206145"
+  },
+  "roster_fortnite": {
+    "coach": "À définir",
+    "high": [],
+    "tryhard": [
+      "<@1330941605791928404>"
+    ],
+    "academy": [],
+    "chill": [],
+    "messageId": "1474345405046325392"
+  },
+  "roster_rl": {
+    "coach": "À définir",
+    "high": [],
+    "tryhard": [],
+    "academy": [],
+    "chill": [
+      "<@1330941605791928404>"
+    ],
+    "messageId": "1474345406304485386"
+  },
+  "admin_dossiers": [
+    {
+      "id": 1,
+      "nom": "SILVADA",
+      "details": "Capitaine/Coach - Validé High Roster"
+    },
+    {
+      "id": 2,
+      "nom": "Nene",
+      "details": "Joueur - Validé High Roster"
+    },
+    {
+      "id": 3,
+      "nom": "Mr.Gege",
+      "details": "Joueur - Validé Pôle Chill"
+    },
+    {
+      "id": 4,
+      "nom": "Grimace-Nrv",
+      "details": "Multi-gaming - Validé Elite Tryharder/Chill"
+    },
+    {
+      "id": 5,
+      "nom": "pAstek",
+      "details": "Joueur Valo - Validé Elite Tryharder"
+    },
+    {
+      "id": 6,
+      "nom": "Pinpin",
+      "details": "Joueur Valo - Validé Academy"
+    },
+    {
+      "id": 7,
+      "nom": "Adri",
+      "details": "Joueur Valo - Validé Tryhardeur"
+    },
+    {
+      "id": 8,
+      "nom": "Nati",
+      "details": "EN ATTENTE - Cible : High Roster"
+    },
+    {
+      "id": 9,
+      "nom": "Dragon",
+      "details": "Joueur Valo / Staff - Validé Chill / Technique"
+    }
+  ],
+  "admin_dossiers_config": {
+    "channelId": "1474114984995717150",
+    "messageId": "1474574410668314705"
+  }
+}
