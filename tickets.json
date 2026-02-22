@@ -95,5 +95,9 @@
   "admin_dossiers_config": {
     "channelId": "1474114984995717150",
     "messageId": "1474574410668314705"
+  },
+  "status_config": {
+    "channelId": "1474131554740732012",
+    "messageId": "1474947168421941463"
   }
 }

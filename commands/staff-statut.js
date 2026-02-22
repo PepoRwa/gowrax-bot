@@ -3,64 +3,65 @@ const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('disc
 module.exports = {
     data: new SlashCommandBuilder()
         .setName('staff-statut')
-        .setDescription('Gère la visibilité du support GOWRAX.')
+        .setDescription('Gestion du statut du support GOWRAX')
         .setDefaultMemberPermissions(PermissionFlagsBits.Administrator)
-        .addStringOption(opt => opt.setName('type').setDescription('Où envoyer le message ?').setRequired(true).addChoices(
-            {name: '📢 Annonce Publique', value: 'public'},
-            {name: '🎫 Dans ce Ticket', value: 'ticket'}
-        ))
-        .addStringOption(opt => opt.setName('etat').setDescription('État du support').setRequired(true).addChoices(
-            {name: '🌙 Fermeture Nocturne', value: 'ferme'},
-            {name: '✅ Ouvert / Retour', value: 'ouvert'}
-        )),
+        .addSubcommand(sub => sub
+            .setName('panel')
+            .setDescription('Envoie l\'embed fixe de statut'))
+        .addSubcommand(sub => sub
+            .setName('force')
+            .setDescription('Force un état pour une urgence')
+            .addStringOption(opt => opt.setName('etat').setDescription('État à forcer').setRequired(true).addChoices(
+                {name: '🌙 Mode Nuit', value: 'ferme'},
+                {name: '✅ Mode Ouvert', value: 'ouvert'}
+            ))),
 
     async execute(interaction) {
-        const type = interaction.options.getString('type');
-        const etat = interaction.options.getString('etat');
-        
-        const embed = new EmbedBuilder()
-            .setTimestamp()
-            .setFooter({ text: 'GOWRAX E-Sport • Support & Recrutement' });
+        const subcommand = interaction.options.getSubcommand();
+        const client = interaction.client;
 
-        // --- LOGIQUE FERMETURE ---
-        if (etat === 'ferme') {
-            if (type === 'public') {
-                embed
-                    .setTitle('🌙 NOTE D\'INFORMATION : SUPPORT EN PAUSE')
-                    .setColor('#D62F7F') // Neon Magenta (Alerte)
-                    .setDescription(
-                        "L'équipe GOWRAX marque une pause nocturne.\n\n" +
-                        "⚠️ **À savoir :**\n" +
-                        "• Les tickets ne seront pas traités avant **10h00**.\n" +
-                        "• Le support reste ouvert, mais avec un délai de réponse augmenté.\n\n" +
-                        "Merci de votre patience, la meute récupère ! 🚀"
-                    );
-            } else {
-                embed
-                    .setTitle('🌙 TICKET EN ATTENTE (NUIT)')
-                    .setColor('#1A1C2E') // Void Blue (Discret pour le ticket)
-                    .setDescription(
-                        "Bonjour ! Le staff est actuellement hors ligne pour la nuit.\n\n" +
-                        "Ton ticket est bien pris en compte, mais il ne sera pas traité avant **10h00** du matin.\n\n" +
-                        "*N'hésite pas à laisser tes infos, on te répond dès notre retour !*"
-                    );
+        if (subcommand === 'panel') {
+            const heure = new Date().getHours();
+            const estOuvert = !(heure >= 1 && heure < 10);
+            const embed = this.genererEmbed(estOuvert);
+            
+            const message = await interaction.channel.send({ embeds: [embed] });
+
+            // CRUCIAL : Sauvegarde pour le ready.js et le cron
+            client.db.set('status_config', {
+                channelId: interaction.channel.id,
+                messageId: message.id
+            });
+
+            return interaction.reply({ content: "✅ Panel déployé et sauvegardé !", ephemeral: true });
+        }
+
+        if (subcommand === 'force') {
+            const etat = interaction.options.getString('etat');
+            const estOuvert = (etat === 'ouvert');
+            const embed = this.genererEmbed(estOuvert);
+            
+            const config = client.db.get('status_config');
+            if (config) {
+                try {
+                    const channel = await client.channels.fetch(config.channelId);
+                    const msg = await channel.messages.fetch(config.messageId);
+                    await msg.edit({ embeds: [embed] });
+                } catch (e) { console.error("Panel fixe introuvable."); }
             }
-            
-            await interaction.reply({ content: `✅ Statut fermé envoyé en mode **${type}**.`, ephemeral: true });
-            return interaction.channel.send({ embeds: [embed] });
-        }
 
-        // --- LOGIQUE OUVERTURE ---
-        if (etat === 'ouvert') {
-            embed
-                .setTitle('✅ LE STAFF EST OPÉRATIONNEL')
-                .setColor('#6F2DBD') // Purple Gowrax
-                .setDescription(type === 'public' 
-                    ? "Le support est de nouveau ouvert. Nos équipes sont prêtes à vous répondre !" 
-                    : "Le staff est de retour ! On s'occupe de ton ticket dans quelques instants.");
-            
-            await interaction.reply({ content: `✅ Statut ouvert envoyé en mode **${type}**.`, ephemeral: true });
-            return interaction.channel.send({ embeds: [embed] });
+            return interaction.reply({ content: `⚠️ Support forcé en mode **${etat}**.`, ephemeral: true });
         }
+    },
+
+    genererEmbed(estOuvert) {
+        return new EmbedBuilder()
+            .setTitle(estOuvert ? '✅ LE STAFF EST OPÉRATIONNEL' : '🌙 NOTE D\'INFORMATION : SUPPORT EN PAUSE')
+            .setColor(estOuvert ? '#6F2DBD' : '#D62F7F')
+            .setTimestamp()
+            .setFooter({ text: 'GOWRAX E-Sport • Système de Statut Automatique' })
+            .setDescription(estOuvert 
+                ? "Le support est actuellement **OUVERT**. Nos équipes sont prêtes à vous répondre !" 
+                : "L'équipe GOWRAX marque une pause nocturne.\n\n⚠️ **RÈGLEMENT DE NUIT :**\n• Les tickets ne seront pas traités avant **10h00**.\n• **Relancer le ticket** inutilement entraînera une **baisse de priorité**.\n• **Mentionner (ping) le staff** est **strictement sanctionné**.\n\nMerci de respecter le repos de l'équipe. On revient vite ! 🚀");
     }
 };
