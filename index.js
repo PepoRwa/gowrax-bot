@@ -3,6 +3,10 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const cron = require('node-cron');
+const pool = require('./database.js');
+
+
+client.mysql = pool;
 
 // --- 1. CONFIGURATION DU CLIENT ---
 const client = new Client({
