@@ -1,0 +1,48 @@
+const { SlashCommandBuilder, EmbedBuilder, PermissionFlagsBits } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('send-profile-form')
+        .setDescription('Envoie le formulaire de profil à un membre spécifique en DM')
+        .addUserOption(option => 
+            option.setName('membre')
+                .setDescription('Le membre qui doit remplir son profil')
+                .setRequired(true))
+        .setDefaultMemberPermissions(PermissionFlagsBits.Administrator),
+
+    async execute(interaction) {
+        const cible = interaction.options.getUser('membre');
+
+        const embedDM = new EmbedBuilder()
+            .setTitle('📁 DOSSIER PERSONNEL : ACTION REQUISE')
+            .setColor('#6F2DBD')
+            .setThumbnail('https://gowrax.me/assets/img/logo-team-esport.png')
+            .setDescription(
+                `Bonjour **${cible.username}**,\n\n` +
+                "Dans le cadre de la refonte du site **GOWRAX.me**, nous créons ta page membre officielle.\n\n" +
+                "**🔍 Aperçu du résultat final :**\n" +
+                "[Voir la page de Silvada](https://gowrax.me/profiles/member.html?slug=silvada)\n\n" +
+                "Merci de remplir le formulaire ci-dessous avec soin. Tes réponses seront directement intégrées à ton profil public."
+            )
+            .addFields(
+                { name: '📋 Formulaire d\'intégration', value: '[Cliquer ici pour remplir le G-Form](https://docs.google.com/forms/d/e/1FAIpQLSc85g7ErLxdZbJYEkGGqHWPceHm6SxIql9QxFul8Plk3OnifQ/viewform?usp=sf_link)' }
+            )
+            .setFooter({ text: 'GOWRAX Network • No Error. Just Results.' })
+            .setTimestamp();
+
+        try {
+            await cible.send({ embeds: [embedDM] });
+            
+            return interaction.reply({ 
+                content: `✅ Le dossier a été envoyé avec succès à **${cible.tag}**.`, 
+                ephemeral: true 
+            });
+        } catch (error) {
+            console.error(`Impossible d'envoyer le DM à ${cible.tag}:`, error);
+            return interaction.reply({ 
+                content: `❌ Impossible d'envoyer le DM à **${cible.tag}**. Il a probablement fermé ses messages privés ou bloqué le bot.`, 
+                ephemeral: true 
+            });
+        }
+    }
+};

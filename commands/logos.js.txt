@@ -1,0 +1,30 @@
+const { SlashCommandBuilder, EmbedBuilder } = require('discord.js');
+
+module.exports = {
+    data: new SlashCommandBuilder()
+        .setName('profile-pic')
+        .setDescription('Récupère l\'image de profil d\'un agent en haute résolution')
+        .addUserOption(option => 
+            option.setName('target')
+                .setDescription('L\'agent dont vous voulez voir la photo')
+                .setRequired(true)),
+    async execute(interaction) {
+        const user = interaction.options.getUser('target');
+        
+        // Récupération de l'URL de l'avatar en 4096px (Taille max)
+        const avatarURL = user.displayAvatarURL({ dynamic: true, size: 4096 });
+
+        const embed = new EmbedBuilder()
+            .setTitle(`📂 DOSSIER_VISUEL // AGENT: ${user.username.toUpperCase()}`)
+            .setColor('#D62F7F')
+            .setDescription(`Récupération de l'asset en haute résolution terminée.`)
+            .setImage(avatarURL)
+            .addFields(
+                { name: '🆔 ID_SYSTEM', value: `\`${user.id}\``, inline: true },
+                { name: '🛰️ SOURCE', value: `[Lien direct vers l'image](${avatarURL})`, inline: true }
+            )
+            .setFooter({ text: 'GOWRAX INTERNAL DATABASE • PROTOCOLE IMAGE_HQ' });
+
+        await interaction.reply({ embeds: [embed] });
+    },
+};

@@ -1,7 +1,7 @@
 const { ActivityType } = require('discord.js');
 
 module.exports = {
-    name: 'ready',
+    name: 'clientReady',
     once: true,
     async execute(client) {
         console.log(`✅ ${client.user.tag} est prêt et organisé !`);
@@ -12,7 +12,7 @@ module.exports = {
 
         // --- CHECK DU STATUT AUTO AU DÉMARRAGE ---
         const heure = new Date().getHours();
-        const estLaNuit = (heure >= 1 && heure < 10);
+        const estLaNuit = (heure >= 1 && heure < 9);
         
         console.log(`[Auto-Check] Il est ${heure}h. Mode détecté : ${estLaNuit ? 'NUIT 🌙' : 'OUVERT ✅'}`);
 

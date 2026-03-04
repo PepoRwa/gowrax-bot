@@ -1,37 +1,41 @@
-const { Events, PermissionFlagsBits } = require('discord.js');
+const { Events } = require('discord.js');
 
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
         // --- CONFIGURATION ---
-        // Liste des catégories à surveiller (Litiges, Support, Recrutement)
         const TICKET_CATEGORIES = ['1474110462470783212']; 
         const STAFF_ROLE_ID = '1472731688957251748';
 
-        // 1. On ignore les messages des bots (sauf le nôtre pour l'initialisation) et les messages hors catégories tickets
-        if (message.author.bot && message.author.id !== message.client.user.id) return;
+        // 1. Filtres de base
+        if (message.author.bot) return; // On ignore TOUS les bots ici pour éviter les boucles
         if (!message.channel.parentId || !TICKET_CATEGORIES.includes(message.channel.parentId)) return;
+        
+        // 2. SÉCURITÉ : Discord ne permet pas de changer le topic d'un THREAD
+        // Si ton ticket est un fil de discussion, on s'arrête là.
+        if (message.channel.isThread()) return;
 
         let status = "";
 
-        // 2. Déterminer l'état selon l'auteur
-        if (message.author.id === message.client.user.id) {
-            // Si c'est le bot qui parle (message de bienvenue)
-            status = "⚪ ÉTAT : OUVERT (En attente du staff)";
-        } else if (message.member.roles.cache.has(STAFF_ROLE_ID)) {
-            // Si c'est un membre du staff qui répond
+        // 3. Déterminer l'état selon l'auteur
+        if (message.member && message.member.roles.cache.has(STAFF_ROLE_ID)) {
             status = `🟢 ÉTAT : RÉPONDU (par ${message.author.username})`;
         } else {
-            // Si c'est l'utilisateur (le créateur du ticket) qui parle
             status = "🔴 ÉTAT : EN ATTENTE DE RÉPONSE";
         }
 
-        // 3. Mise à jour du Topic du salon (on évite de spammer l'API si le statut est déjà le même)
+        // 4. Mise à jour du Topic avec sécurité
         if (message.channel.topic !== status) {
             try {
-                await message.channel.setTopic(status);
+                // On vérifie une dernière fois si le salon est accessible
+                await message.channel.edit({ 
+                    topic: status,
+                    reason: 'Mise à jour automatique du statut du ticket'
+                });
             } catch (error) {
-                console.error("Erreur mise à jour Topic Ticket:", error);
+                // Si le salon a disparu ou si on n'a pas les perm, on ne spam plus la console
+                if (error.code === 10003) return; 
+                console.error("Erreur mise à jour Topic Ticket:", error.message);
             }
         }
     },

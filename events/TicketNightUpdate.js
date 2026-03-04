@@ -5,7 +5,7 @@ module.exports = {
     async execute(message) {
         // 1. Config des heures de nuit
         const heure = new Date().getHours();
-        const estLaNuit = (heure >= 1 && heure < 10);
+        const estLaNuit = (heure >= 1 && heure < 9);
 
         // 2. Filtres de sécurité
         if (!estLaNuit || message.author.bot) return;
