@@ -1,8 +1,40 @@
 const { Events, ChannelType, PermissionFlagsBits, EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder } = require('discord.js');
+// Chronomètre temporaire stocké en RAM
+const voiceTimers = new Map();
 
 module.exports = {
     name: Events.VoiceStateUpdate,
     async execute(oldState, newState) {
+        const userId = newState.member.id;
+
+        // ⏱️ TRACKING VOCAL : Connexion
+        if (!oldState.channelId && newState.channelId) {
+            voiceTimers.set(userId, Date.now()); // Démarre le chrono
+        }
+
+        // ⏱️ TRACKING VOCAL : Déconnexion
+        if (oldState.channelId && !newState.channelId) {
+            const joinTime = voiceTimers.get(userId);
+            if (joinTime) {
+                const timeSpent = Date.now() - joinTime;
+                voiceTimers.delete(userId); // Nettoie la RAM
+
+                // Envoi du temps total passé en DB
+                try {
+                    if (newState.client.mysql) {
+                        const query = `
+                            INSERT INTO user_stats (user_id, messages_count, vocal_time_ms) 
+                            VALUES (?, 0, ?) 
+                            ON DUPLICATE KEY UPDATE vocal_time_ms = vocal_time_ms + ?
+                        `;
+                        // On passe timeSpent deux fois car il y a deux "?" pour cette valeur dans la requête
+                        await newState.client.mysql.execute(query, [userId, timeSpent, timeSpent]);
+                    }
+                } catch (error) {
+                    console.error("Erreur tracking vocal :", error.message);
+                }
+            }
+        }
         const HUB_ID = '1474103585687081030'; 
         const CATEGORY_ID = '1474102365115125995'; 
 
