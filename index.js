@@ -154,4 +154,3 @@ exec('node deploy-commands.js', (error, stdout, stderr) => {
 client.login(process.env.TOKEN);
 
 //TODO: Ajouter sur le site web l'état du support (ouvert/fermé) en temps réel via une API ou un widget qui lit le statut depuis la DB ou un endpoint dédié.
-//TODO: Ajouter notamment sur le site web le formulaire de contact (qui atterit sur le server via un webhook ainsi qu'une page News)
