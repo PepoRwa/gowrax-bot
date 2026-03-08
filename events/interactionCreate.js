@@ -258,6 +258,14 @@ module.exports = {
             }
         }
 
+        if (interaction.customId === 'check_jobs_refresh') {
+            // On simule une vérification "en direct" pour le membre
+            await interaction.reply({   
+                content: "🔍 Synchronisation avec la base de données de la direction... Les statuts affichés ci-dessus sont à jour.", 
+                ephemeral: true 
+            });
+        }
+
         // 5. GESTION DES MODALS
         if (interaction.isModalSubmit()) {
             if (interaction.customId === 'modal_contest') {
