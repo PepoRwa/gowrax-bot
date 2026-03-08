@@ -137,7 +137,20 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
-// --- 7. CONNEXION ---
+// --- 7. DÉPLOIEMENT AUTO DES COMMANDES SLASH ---
+const { exec } = require('child_process');
+
+console.log('🔄 Lancement de la synchronisation des commandes slash...');
+exec('node deploy-commands.js', (error, stdout, stderr) => {
+    if (error) {
+        console.error(`❌ Erreur lors du déploiement : ${error.message}`);
+        return;
+    }
+    // Affiche le résultat directement dans la console principale
+    console.log(`✅ Résultat du déploiement :\n${stdout}`); 
+});
+
+// --- 8. CONNEXION ---
 client.login(process.env.TOKEN);
 
 //TODO: Ajouter sur le site web l'état du support (ouvert/fermé) en temps réel via une API ou un widget qui lit le statut depuis la DB ou un endpoint dédié.
