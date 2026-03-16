@@ -42,13 +42,25 @@ module.exports = {
             new ButtonBuilder().setCustomId('role_fortnite').setLabel('Fortnite').setEmoji('🧱').setStyle(ButtonStyle.Success),
         );
 
+        // --- EMBED 4 : LANGUE ---
+        const embedLanguage = new EmbedBuilder()
+            .setColor('#aa0cffff') // Violet
+            .setTitle('🌍 CHOIX DE LA LANGUE / LANGUAGE CHOICE')
+            .setDescription('Choisissez votre langue principale pour être notifié correctement.\nChoose your main language to be notified correctly.');
+
+        const row4 = new ActionRowBuilder().addComponents(
+            new ButtonBuilder().setCustomId('role_fr').setLabel('Français').setEmoji('🇫🇷').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('role_en').setLabel('English').setEmoji('🇬🇧').setStyle(ButtonStyle.Primary),
+        );
+
         // --- BOUTON DE VÉRIFICATION ---
         const rowCheck = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('check_my_roles').setLabel('Voir mes rôles actifs').setEmoji('👤').setStyle(ButtonStyle.Primary),
+            new ButtonBuilder().setCustomId('check_my_roles').setLabel('Voir mes rôles actifs').setEmoji('👤').setStyle(ButtonStyle.Secondary),
         );
 
         await interaction.reply({ content: '✅ Déploiement du centre d\'accès...', ephemeral: true });
         
+        await interaction.channel.send({ embeds: [embedLanguage], components: [row4] });
         await interaction.channel.send({ embeds: [embedNews], components: [row1] });
         await interaction.channel.send({ embeds: [embedEsport], components: [row2] });
         await interaction.channel.send({ embeds: [embedGaming], components: [row3] });

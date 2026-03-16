@@ -28,7 +28,8 @@ module.exports = {
                 'role_annonces': '1472735238642995232', 'role_events': '1472735294087233598',
                 'role_lives': '1472735339796889784', 'role_videos': '1472735380569591828',
                 'role_matchs': '1472735427571220655', 'role_valorant': '1472735460320084182',
-                'role_rl': '1472735492343857204', 'role_fortnite': '1472735529585086656'
+                'role_rl': '1472735492343857204', 'role_fortnite': '1472735529585086656',
+                'role_fr': '1483160519966855270', 'role_en': '1483160477109321921'
             };
 
             if (roleMap[interaction.customId]) {
