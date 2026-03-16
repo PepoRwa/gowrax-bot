@@ -30,18 +30,6 @@ module.exports = {
             new ButtonBuilder().setCustomId('role_matchs').setLabel('Matchs').setEmoji('🏆').setStyle(ButtonStyle.Danger),
         );
 
-        // --- EMBED 3 : GAMING ---
-        const embedGaming = new EmbedBuilder()
-            .setColor('#57F287') // Vert
-            .setTitle('🎮 PINGS GAMING')
-            .setDescription('Soyez notifiés pour trouver des mates ou participer à des games communautaires.');
-
-        const row3 = new ActionRowBuilder().addComponents(
-            new ButtonBuilder().setCustomId('role_valorant').setLabel('Valorant').setEmoji('🔫').setStyle(ButtonStyle.Success),
-            new ButtonBuilder().setCustomId('role_rl').setLabel('Rocket League').setEmoji('🏎️').setStyle(ButtonStyle.Success),
-            new ButtonBuilder().setCustomId('role_fortnite').setLabel('Fortnite').setEmoji('🧱').setStyle(ButtonStyle.Success),
-        );
-
         // --- EMBED 4 : LANGUE ---
         const embedLanguage = new EmbedBuilder()
             .setColor('#60098e') // Violet
@@ -63,7 +51,6 @@ module.exports = {
         await interaction.channel.send({ embeds: [embedLanguage], components: [row4] });
         await interaction.channel.send({ embeds: [embedNews], components: [row1] });
         await interaction.channel.send({ embeds: [embedEsport], components: [row2] });
-        await interaction.channel.send({ embeds: [embedGaming], components: [row3] });
         await interaction.channel.send({ components: [rowCheck] });
     },
 };
