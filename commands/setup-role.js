@@ -44,7 +44,7 @@ module.exports = {
 
         // --- EMBED 4 : LANGUE ---
         const embedLanguage = new EmbedBuilder()
-            .setColor('#aa0cffff') // Violet
+            .setColor('#60098e') // Violet
             .setTitle('🌍 CHOIX DE LA LANGUE / LANGUAGE CHOICE')
             .setDescription('Choisissez votre langue principale pour être notifié correctement.\nChoose your main language to be notified correctly.');
 
