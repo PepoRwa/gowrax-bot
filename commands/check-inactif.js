@@ -23,9 +23,9 @@ module.exports = {
         const numeroSuivi = Math.floor(1000 + Math.random() * 9000); 
 
         const embedMessage = new EmbedBuilder()
-            .setColor('#FFA500')
-            .setTitle('👋 Bonjour de la Gowrax !')
-            .setDescription(`Salut ${target.username},\n\nNous faisons le point sur l'activité de nos membres. Es-tu toujours actif au sein de la structure ?\n\n**🎟️ Numéro de suivi : #${numeroSuivi}**\n*Merci de répondre directement à ce message pour nous tenir informés.*`);
+            .setColor('#2F3136')
+            .setTitle('⚠️ Contrôle d\'Activité - Gowrax')
+            .setDescription(`Bonjour ${target.username},\n\nComme annoncé récemment, l'équipe de la **Gowrax** effectue un contrôle général d'activité de ses membres afin de faire le point sur nos effectifs.\n\nNous avons remarqué une baisse d'activité de ta part ces derniers temps. Pourrais-tu nous confirmer si tu souhaites toujours faire partie de nos effectifs et rester actif au sein de la structure ?\n\n🕒 **Tu disposes d'un délai de 72 heures pour répondre directement à ce message.**\nPassé ce délai sans nouvelle de ta part, nous considérerons que tu ne souhaites plus poursuivre l'aventure avec nous et procéderons à un dérank.\n\n**🎟️ Numéro de suivi : #${numeroSuivi}**\n*(Réponds simplement à ce message depuis tes DMs, notre équipe recevra ta réponse)*`);
 
         try {
             await target.send({ embeds: [embedMessage] });
