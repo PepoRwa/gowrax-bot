@@ -10,7 +10,39 @@ module.exports = {
             const fs = require('fs');
             const path = require('path');
             const DB_FILE = path.join(__dirname, '..', 'inactifs.json');
+            const MODMAIL_DB = path.join(__dirname, '..', 'modmail.json');
 
+            // 1) VÉRIFICATION MODMAIL (Priorité absolue)
+            if (fs.existsSync(MODMAIL_DB)) {
+                let modmailDb = JSON.parse(fs.readFileSync(MODMAIL_DB, 'utf-8'));
+                if (modmailDb[message.author.id] && modmailDb[message.author.id].status === 'open') {
+                    const threadId = modmailDb[message.author.id].threadId;
+                    try {
+                        const threadChannel = await message.client.channels.fetch(threadId);
+                        if (threadChannel && threadChannel.isThread()) {
+                            let attachmentLinks = '';
+                            if (message.attachments.size > 0) {
+                                attachmentLinks = '\n' + message.attachments.map(a => `📎 [Pièce jointe](${a.url})`).join('\n');
+                            }
+
+                            const userEmbed = new EmbedBuilder()
+                                .setColor('#5865F2')
+                                .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+                                .setDescription((message.content || "*Aucun texte*") + attachmentLinks)
+                                .setFooter({ text: 'Reçu via DM' })
+                                .setTimestamp();
+
+                            await threadChannel.send({ embeds: [userEmbed] });
+                            await message.react('📩').catch(()=>{}); // Confirme que le msg est parti dans le fil
+                            return; // On arrête là pour ne pas spam le reste inactif
+                        }
+                    } catch (e) {
+                        console.error('Erreur relai modmail membre -> staff', e);
+                    }
+                }
+            }
+
+            // 2) VÉRIFICATION CHECK-INACTIF (Si pas de modmail en cours)
             if (fs.existsSync(DB_FILE)) {
                 let db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
                 if (db[message.author.id]) {
@@ -90,6 +122,41 @@ module.exports = {
                 }
             }
             return;
+        }
+
+        // --- SECTION 3 : ÉCOUTE DES FILs POUR LE MODMAIL ---
+        if (message.channel.isThread()) {
+            const fs = require('fs');
+            const path = require('path');
+            const MODMAIL_DB = path.join(__dirname, '..', 'modmail.json');
+
+            if (fs.existsSync(MODMAIL_DB)) {
+                let modmailDb = JSON.parse(fs.readFileSync(MODMAIL_DB, 'utf-8'));
+                if (modmailDb[`thread_${message.channel.id}`]) {
+                    const targetId = modmailDb[`thread_${message.channel.id}`];
+                    // On ne renvoie pas les messages de modération type /commande ou si ça commence par qqch de spécifique (optionnel)
+                    try {
+                        const targetUser = await message.client.users.fetch(targetId);
+                        
+                        let attachmentLinks = '';
+                        if (message.attachments.size > 0) {
+                            attachmentLinks = '\n' + message.attachments.map(a => `📎 [Pièce jointe](${a.url})`).join('\n');
+                        }
+
+                        const staffEmbed = new EmbedBuilder()
+                            .setColor('#ED4245') // Rouge staff pour le membre
+                            .setAuthor({ name: 'Équipe Gowrax', iconURL: message.client.user.displayAvatarURL() })
+                            .setDescription((message.content || "*Aucun texte*") + attachmentLinks)
+                            .setFooter({ text: 'Message du modérateur' })
+                            .setTimestamp();
+
+                        await targetUser.send({ embeds: [staffEmbed] });
+                        await message.react('✅').catch(()=>{}); // Confirme que c'est envoyé
+                    } catch (e) {
+                        message.reply({ content: "❌ Impossible d'envoyer le message (le membre a peut-être fermé ses DMs)." }).then(m => setTimeout(()=>m.delete(), 5000));
+                    }
+                }
+            }
         }
 
         // 📊 TRACKING : Compteur de messages
