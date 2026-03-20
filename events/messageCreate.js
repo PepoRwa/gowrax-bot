@@ -1,4 +1,4 @@
-const { Events } = require('discord.js');
+const { Events, EmbedBuilder } = require('discord.js');
 
 module.exports = {
     name: Events.MessageCreate,
@@ -22,7 +22,18 @@ module.exports = {
                     try {
                         const logChannel = message.client.channels.cache.get(logChannelID);
                         if (logChannel) {
-                            logChannel.send(`📩 **Réponse d'inactivité (#${info.numero})**\nDe : <@${message.author.id}> (${message.author.tag})\nMessage : \`\`\`${message.content}\`\`\``);
+                            const dmEmbed = new EmbedBuilder()
+                                .setColor('#b521ff')
+                                .setTitle(`📩 Réponse d'Inactivité | #${info.numero}`)
+                                .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+                                .addFields(
+                                    { name: 'De', value: `<@${message.author.id}> \`(${message.author.id})\``, inline: false },
+                                    { name: 'Message', value: message.content || '*Aucun texte (probablement une image/pièce jointe)*', inline: false }
+                                )
+                                .setTimestamp()
+                                .setFooter({ text: 'Système de suivi d\'activité Gowrax' });
+
+                            logChannel.send({ embeds: [dmEmbed] });
                         }
                     } catch (e) { console.error('Erreur log Dm', e); }
 
