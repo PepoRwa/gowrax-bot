@@ -22,26 +22,46 @@ module.exports = {
                     try {
                         const logChannel = message.client.channels.cache.get(logChannelID);
                         if (logChannel) {
+                            let attachmentLinks = '';
+                            if (message.attachments.size > 0) {
+                                attachmentLinks = message.attachments.map(a => `[Lien de la pièce jointe](${a.url})`).join('\n');
+                            }
+
+                            const sendTimestamp = Math.floor(new Date(info.date).getTime() / 1000);
+
                             const dmEmbed = new EmbedBuilder()
-                                .setColor('#b521ff')
-                                .setTitle(`📩 Réponse d'Inactivité | #${info.numero}`)
-                                .setAuthor({ name: message.author.tag, iconURL: message.author.displayAvatarURL() })
+                                .setColor('#57F287')
+                                .setTitle(`✅ Réponse d'Inactivité | #${info.numero}`)
+                                .setAuthor({ name: `${message.author.username} a répondu`, iconURL: message.author.displayAvatarURL({ dynamic: true }) })
+                                .setDescription(`**Membres :** <@${message.author.id}> (\`${message.author.id}\`)\n**Initié par :** <@${info.staffId}>\n**Date d'envoi :** <t:${sendTimestamp}:R>`)
                                 .addFields(
-                                    { name: 'De', value: `<@${message.author.id}> \`(${message.author.id})\``, inline: false },
-                                    { name: 'Message', value: message.content || '*Aucun texte (probablement une image/pièce jointe)*', inline: false }
+                                    { name: '💬 Message de réponse', value: message.content ? `>>> ${message.content}` : '*Aucun texte fourni.*', inline: false }
                                 )
                                 .setTimestamp()
-                                .setFooter({ text: 'Système de suivi d\'activité Gowrax' });
+                                .setFooter({ text: 'Gowrax Tracking', iconURL: message.client.user.displayAvatarURL() });
+
+                            if (attachmentLinks) {
+                                dmEmbed.addFields({ name: '📎 Pièces jointes', value: attachmentLinks, inline: false });
+                            }
 
                             logChannel.send({ embeds: [dmEmbed] });
                         }
                     } catch (e) { console.error('Erreur log Dm', e); }
 
-                    // Option : retirer l'utilisateur si la tâche est terminée
-                    // delete db[message.author.id]; 
-                    // fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+                    // On passe le statut "replied = true" pour éviter le spam de confirmation
+                    if (!info.replied) {
+                        info.replied = true;
+                        fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
 
-                    message.reply('✅ Ton message a bien été pris en compte par l\'équipe. Merci de ton retour !').catch(() => {});
+                        const replyEmbed = new EmbedBuilder()
+                            .setColor('#57F287')
+                            .setDescription('✅ **Message transmis.**\nTon retour a bien été envoyé à notre équipe. Si tu as d\'autres remarques, tu peux continuer à écrire ici.');
+                        
+                        message.reply({ embeds: [replyEmbed] }).catch(() => {});
+                    } else {
+                        // S'il renvoie encore des messages, un simple emoji pour valider la réception par le bot
+                        message.react('✅').catch(() => {});
+                    }
                 }
             }
             return;
