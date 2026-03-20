@@ -7,8 +7,8 @@ module.exports = {
         const STATUS_CHANNEL_ID = '1474203660568363176';
         console.log(`✅ ${client.user.tag} est prêt et déployé sur l'infrastructure YorkHost !`);
         
-        // --- BOUCLE D'ACTUALISATION TOUTES LES 2 MINUTES ---
-        setInterval(async () => {
+        // --- FONCTION DE MISE À JOUR DU STATUT ---
+        const updateStatus = async () => {
             const channel = await client.channels.fetch(STATUS_CHANNEL_ID).catch(() => null);
             if (!channel) return;
 
@@ -48,6 +48,12 @@ module.exports = {
             } else {
                 await channel.send({ embeds: [embed] }).catch(() => {});
             }
-        }, 120000); // 120 000 ms = Toutes les 2 minutes
+        };
+
+        // On l'exécute DIRECTEMENT au démarrage
+        await updateStatus();
+
+        // PUIS on lance la boucle d'actualisation toutes les 2 minutes
+        setInterval(updateStatus, 120000); // 120 000 ms = Toutes les 2 minutes
     },
 };
