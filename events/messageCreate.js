@@ -3,8 +3,38 @@ const { Events } = require('discord.js');
 module.exports = {
     name: Events.MessageCreate,
     async execute(message) {
-        // Ignorer les bots et les messages privés (DMs)
-        if (message.author.bot || !message.guild) return;
+        if (message.author.bot) return;
+
+        // VÉRIFIER SI C'EST UN MESSAGE PRIVÉ (DM)
+        if (message.channel.type === 1 || !message.guild) { // ChannelType.DM = 1
+            const fs = require('fs');
+            const path = require('path');
+            const DB_FILE = path.join(__dirname, '..', 'inactifs.json');
+
+            if (fs.existsSync(DB_FILE)) {
+                let db = JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+                if (db[message.author.id]) {
+                    const info = db[message.author.id];
+                    console.log(`[DM Inactif] Réponse reçue de ${message.author.tag} (Suivi: #${info.numero}) : ${message.content}`);
+
+                    // Optionnel : Envoyer un log dans un channel de l'équipe (remplace 'ID_DU_CHANNEL' par un vrai ID)
+                    const logChannelID = '1473341218225131615'; // À changer si tu veux
+                    try {
+                        const logChannel = message.client.channels.cache.get(logChannelID);
+                        if (logChannel) {
+                            logChannel.send(`📩 **Réponse d'inactivité (#${info.numero})**\nDe : <@${message.author.id}> (${message.author.tag})\nMessage : \`\`\`${message.content}\`\`\``);
+                        }
+                    } catch (e) { console.error('Erreur log Dm', e); }
+
+                    // Option : retirer l'utilisateur si la tâche est terminée
+                    // delete db[message.author.id]; 
+                    // fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+
+                    message.reply('✅ Ton message a bien été pris en compte par l\'équipe. Merci de ton retour !').catch(() => {});
+                }
+            }
+            return;
+        }
 
         // 📊 TRACKING : Compteur de messages
         try {
