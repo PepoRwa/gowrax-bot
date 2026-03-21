@@ -1,4 +1,4 @@
-const { Events, EmbedBuilder } = require('discord.js');
+const { Events, EmbedBuilder, ActivityType } = require('discord.js');
 
 module.exports = {
     name: Events.ClientReady,
@@ -6,8 +6,27 @@ module.exports = {
     async execute(client) {
         const STATUS_CHANNEL_ID = '1474203660568363176';
         console.log(`✅ ${client.user.tag} est prêt et déployé sur l'infrastructure YorkHost !`);
+
+        // --- GESTION DES STATUTS TOURNANTS (Présence du bot) ---
+        const statuses = [
+            { name: "La Gowrax s'étendre...", type: ActivityType.Watching },
+            { name: "Twitch: ptitegow 💜", type: ActivityType.Streaming, url: "https://www.twitch.tv/ptitegow" },
+            { name: "les Tickets Support", type: ActivityType.Listening },
+            { name: `sur ${client.guilds.cache.size} serveur(s)`, type: ActivityType.Playing },
+            { name: "les stats des membres", type: ActivityType.Watching },
+            { name: "Gérer l'infrastructure", type: ActivityType.Playing }
+        ];
+
+        let i = 0;
+        setInterval(() => {
+            client.user.setActivity(statuses[i]);
+            i = (i + 1) % statuses.length;
+        }, 15000); // Change le statut toutes les 15 secondes
         
-        // --- FONCTION DE MISE À JOUR DU STATUT ---
+        // On set le tout premier statut directement au démarrage
+        client.user.setActivity(statuses[0]);
+
+        // --- FONCTION DE MISE À JOUR DU STATUT (Embed Info) ---
         const updateStatus = async () => {
             const channel = await client.channels.fetch(STATUS_CHANNEL_ID).catch(() => null);
             if (!channel) return;
