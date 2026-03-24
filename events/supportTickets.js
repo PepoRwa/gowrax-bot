@@ -63,7 +63,7 @@ module.exports = {
 
                 // --- SUPABASE: TICKET EN COURS (PENDING) ---
                 try {
-                    const { error } = const { error } = await supabase.from('tickets')
+                    const { error } = await supabase.from('tickets')
                         .update({ status: 'pending' })
                         .eq('channel_id', interaction.channel.id);
                     if (error) console.error('SUPABASE DB ERROR (CLAIM):', error);
@@ -106,7 +106,7 @@ module.exports = {
 
                 // --- SUPABASE: FERMETURE TICKET ---
                 try {
-                    const { error } = const { error } = await supabase.from('tickets')
+                    const { error } = await supabase.from('tickets')
                         .update({ status: 'closed' })
                         .eq('channel_id', interaction.channel.id);
                 } catch (dbErr) {
@@ -192,7 +192,6 @@ module.exports = {
                             latest_message: ticketMessage,
                             channel_id: ticketChannel.id
                         }]);
-                        if (error) console.error('SUPABASE DB ERROR (CREATE):', error);
                         if (error) console.error('SUPABASE DB ERROR (CREATE):', error);
                     } catch (dbErr) {
                         console.error("Supabase Error on Ticket Create:", dbErr);
