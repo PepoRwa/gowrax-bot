@@ -1,0 +1,33 @@
+TUTORIEL : CONNECTER LE BOT GOWRAX A SUPABASE
+
+1. AJOUTER LES CLÉS DANS LE .ENV DU BOT DISCORD
+Ouvre le fichier .env de ton bot (`/Users/antoine/Documents/gowrax-bot/.env`) et ajoute ces deux lignes tout en bas :
+
+SUPABASE_URL=https://nvtcjaallxoweujbyhng.supabase.co
+SUPABASE_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik
+
+2. INSTALLER SUPABASE SUR LE BOT
+Ouvre un terminal, va dans le dossier du bot et tape :
+npm install @supabase/supabase-js
+
+3. CRÉER LA TABLE SUR SUPABASE (DEPUIS LE NAVIGATEUR)
+- Va sur ton dashboard web Supabase (https://supabase.com)
+- Connecte-toi à ton projet "nvtcjaallxoweujbyhng"
+- Va dans l'onglet "SQL Editor" ou "Table Editor"
+- Crée une table appelée "tickets" avec les colonnes suivantes :
+  - `id` (uuid, Primary Key, gen_random_uuid())
+  - `discord_user` (text) - Pour le pseudo ou @mention
+  - `subject` (text) - Le but du ticket
+  - `status` (text) - open, pending, ou closed
+  - `latest_message` (text) - Le dernier message ou contenu du ticket
+  - `created_at` (timestamp, défaut: now())
+
+4. MODIFIER LE BOT POUR QU'IL ENVOIE LES DONNÉES
+Dans les fichiers de commandes où les tickets sont créés (ex: une commande /ticket), tu devras importer :
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+Puis, quand un ticket est créé, tu ajoutes ça dans le code du bot :
+await supabase.from('tickets').insert([
+  { discord_user: interaction.user.username, subject: 'Nom du sujet', status: 'open', latest_message: 'Contenu inital' }
+]);

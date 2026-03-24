@@ -1,0 +1,5 @@
+// AJOUTS A FAIRE EN HAUT DU FICHIER:
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+
+// FONCTION A INTEGRER DANS UN FICHIER PATCH POUR GARDER LE CONTEXTE.

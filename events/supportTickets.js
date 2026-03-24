@@ -1,5 +1,8 @@
 const { Events, EmbedBuilder, ModalBuilder, TextInputBuilder, TextInputStyle, ActionRowBuilder, ButtonBuilder, ButtonStyle, ChannelType, PermissionFlagsBits } = require('discord.js');
 
+const { createClient } = require('@supabase/supabase-js');
+const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_KEY);
+
 module.exports = {
     name: Events.InteractionCreate,
     async execute(interaction) {
@@ -57,6 +60,17 @@ module.exports = {
                 
                 const newRow = ActionRowBuilder.from(interaction.message.components[0]);
                 newRow.components[0].setDisabled(true).setLabel('Pris en charge');
+
+                // --- SUPABASE: TICKET EN COURS (PENDING) ---
+                try {
+                    await supabase.from('tickets')
+                        .update({ status: 'pending' })
+                        .eq('channel_id', interaction.channel.id);
+                } catch (dbErr) {
+                    console.error("Supabase Error on Ticket Claim:", dbErr);
+                }
+                // -------------------------------------------
+
                 return await interaction.message.edit({ components: [newRow] });
             }
 
@@ -85,6 +99,17 @@ module.exports = {
                     await logChannel.send({ embeds: [transcriptEmbed] });
                 }
                 setTimeout(() => interaction.channel.delete().catch(() => null), 5000);
+
+                // --- SUPABASE: FERMETURE TICKET ---
+                try {
+                    await supabase.from('tickets')
+                        .update({ status: 'closed' })
+                        .eq('channel_id', interaction.channel.id);
+                } catch (dbErr) {
+                    console.error("Supabase Error on Ticket Close:", dbErr);
+                }
+                // ----------------------------------
+
             }
         }
 
@@ -150,6 +175,24 @@ module.exports = {
                         embeds: [embed], 
                         components: [row] 
                     });
+
+                    // --- SUPABASE: CREATION TICKET ---
+                    try {
+                        const ticketSubject = isRecruit ? 'Recrutement: ' + interaction.fields.getTextInputValue('role') : interaction.fields.getTextInputValue('subject');
+                        const ticketMessage = isRecruit ? interaction.fields.getTextInputValue('motivations') : interaction.fields.getTextInputValue('description');
+                        
+                        await supabase.from('tickets').insert([{ 
+                            discord_user: interaction.user.username, 
+                            subject: ticketSubject, 
+                            status: 'open', 
+                            latest_message: ticketMessage,
+                            channel_id: ticketChannel.id
+                        }]);
+                    } catch (dbErr) {
+                        console.error("Supabase Error on Ticket Create:", dbErr);
+                    }
+                    // ---------------------------------
+
 
                     return await interaction.editReply({ content: `✅ Ton ticket a été créé : ${ticketChannel}` });
                 } catch (error) {
