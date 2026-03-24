@@ -63,9 +63,13 @@ module.exports = {
 
                 // --- SUPABASE: TICKET EN COURS (PENDING) ---
                 try {
-                    await supabase.from('tickets')
+                    const { error } = const { error } = await supabase.from('tickets')
                         .update({ status: 'pending' })
                         .eq('channel_id', interaction.channel.id);
+                    if (error) console.error('SUPABASE DB ERROR (CLAIM):', error);
+                    if (error) console.error('SUPABASE DB ERROR (CLOSE):', error);
+                    if (error) console.error('SUPABASE DB ERROR (CLAIM):', error);
+                    if (error) console.error('SUPABASE DB ERROR (CLOSE):', error);
                 } catch (dbErr) {
                     console.error("Supabase Error on Ticket Claim:", dbErr);
                 }
@@ -102,7 +106,7 @@ module.exports = {
 
                 // --- SUPABASE: FERMETURE TICKET ---
                 try {
-                    await supabase.from('tickets')
+                    const { error } = const { error } = await supabase.from('tickets')
                         .update({ status: 'closed' })
                         .eq('channel_id', interaction.channel.id);
                 } catch (dbErr) {
@@ -181,13 +185,15 @@ module.exports = {
                         const ticketSubject = isRecruit ? 'Recrutement: ' + interaction.fields.getTextInputValue('role') : interaction.fields.getTextInputValue('subject');
                         const ticketMessage = isRecruit ? interaction.fields.getTextInputValue('motivations') : interaction.fields.getTextInputValue('description');
                         
-                        await supabase.from('tickets').insert([{ 
+                        const { data, error } = const { data, error } = await supabase.from('tickets').insert([{ 
                             discord_user: interaction.user.username, 
                             subject: ticketSubject, 
                             status: 'open', 
                             latest_message: ticketMessage,
                             channel_id: ticketChannel.id
                         }]);
+                        if (error) console.error('SUPABASE DB ERROR (CREATE):', error);
+                        if (error) console.error('SUPABASE DB ERROR (CREATE):', error);
                     } catch (dbErr) {
                         console.error("Supabase Error on Ticket Create:", dbErr);
                     }
