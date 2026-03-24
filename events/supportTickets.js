@@ -185,7 +185,7 @@ module.exports = {
                         const ticketSubject = isRecruit ? 'Recrutement: ' + interaction.fields.getTextInputValue('role') : interaction.fields.getTextInputValue('subject');
                         const ticketMessage = isRecruit ? interaction.fields.getTextInputValue('motivations') : interaction.fields.getTextInputValue('description');
                         
-                        const { data, error } = const { data, error } = await supabase.from('tickets').insert([{ 
+                        const { data, error } = await supabase.from('tickets').insert([{ 
                             discord_user: interaction.user.username, 
                             subject: ticketSubject, 
                             status: 'open', 
