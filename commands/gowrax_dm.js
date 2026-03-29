@@ -10,7 +10,7 @@ const {
 // ⚙️ ================== CONFIGURATION FACILE ================== ⚙️
 const LOG_CHANNEL_ID = '1473341218225131615'; // Remplace par l'ID de ton salon Logs Admins
 const ADMIN_ROLE_ID = '1472395939150037165'; // Remplace par l'ID du rôle à pinger (ex: @Fondateur)
-const DEFAULT_COLOR = '#720cffff'; // Couleur Gowrax par défaut (Rouge/Corail)
+const DEFAULT_COLOR = '#720cff'; // Couleur Gowrax par défaut (Rouge/Corail)
 // ==============================================================
 
 module.exports = {
