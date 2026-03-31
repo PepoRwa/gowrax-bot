@@ -25,13 +25,13 @@ module.exports = {
             embed = new EmbedBuilder()
                 .setColor('#FF00FF')
                 .setTitle('📝 Formulaire High Roster')
-                .setDescription(`Bonjour ${targetUser},\n\nVoici le formulaire à remplir pour ton dossier **High Roster** (qui sera publié sur le site web).\n\n🔗 **[Clique ici pour accéder au Google Form](https://forms.gle/votre_lien_fr_ici)**\n\n📸 **Important** : Si tu as une image/photo/création à nous communiquer pour ton profil, merci de l'envoyer en message privé à **nakano_san** !`)
+                .setDescription(`Bonjour ${targetUser},\n\nVoici le formulaire à remplir pour ton dossier **High Roster** (qui sera publié sur le site web).\n\n🔗 **[Clique ici pour accéder au Google Form](https://forms.gle/GcNSFSsEGQ74F4NM7)**\n\n📸 **Important** : Si tu as une image/photo/création à nous communiquer pour ton profil, merci de l'envoyer en message privé à **nakano_san** !`)
                 .setFooter({ text: "L'équipe Gowrax" });
         } else {
             embed = new EmbedBuilder()
                 .setColor('#FF00FF')
                 .setTitle('📝 High Roster Form')
-                .setDescription(`Hello ${targetUser},\n\nHere is the form to fill out for your **High Roster** profile (which will be published on the website).\n\n🔗 **[Click here to access the Google Form](https://forms.gle/votre_lien_en_ici)**\n\n📸 **Important**: If you have an image/photo/artwork for your profile, please send it via direct message to **nakano_san**!`)
+                .setDescription(`Hello ${targetUser},\n\nHere is the form to fill out for your **High Roster** profile (which will be published on the website).\n\n🔗 **[Click here to access the Google Form](https://forms.gle/GcNSFSsEGQ74F4NM7)**\n\n📸 **Important**: If you have an image/photo/artwork for your profile, please send it via direct message to **nakano_san**!`)
                 .setFooter({ text: 'The Gowrax Team' });
         }
 
