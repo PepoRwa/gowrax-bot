@@ -3,6 +3,7 @@ const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
 const cron = require('node-cron');
+const supabaseNotifications = require('./supabase-notifications.js');
 // const pool = require('./database.js');
 
 // --- 1. CONFIGURATION DU CLIENT ---
@@ -86,6 +87,9 @@ if (fs.existsSync(commandsPath)) {
         if (command.data && command.execute) client.commands.set(command.data.name, command);
     }
 }
+supabaseNotifications(client);
+
+
 
 // --- 5. CHARGEMENT DES EVENTS ---
 const eventsPath = path.join(__dirname, 'events');
