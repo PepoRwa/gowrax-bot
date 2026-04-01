@@ -25,9 +25,9 @@ module.exports = {
     async execute(oldMember, newMember) {
         if (!supabase) return; 
 
-        // On vérifie s'il y a un changement de rôle (pour optimiser)
-        const oldRoles = oldMember.roles.cache.map(r => r.id);
-        const newRoles = newMember.roles.cache.map(r => r.id);
+        // Protection contre les accès où oldMember/newMember manqueraient (ex: faux objet du supabaseSync)
+        const oldRoles = oldMember?.roles?.cache?.map ? oldMember.roles.cache.map(r => r.id) : [];
+        const newRoles = newMember?.roles?.cache?.map ? newMember.roles.cache.map(r => r.id) : [];
 
         if (oldRoles.length === newRoles.length && oldRoles.every(v => newRoles.includes(v))) {
             return; // Pas de changement de rôle
