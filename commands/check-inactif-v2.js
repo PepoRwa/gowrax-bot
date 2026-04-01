@@ -21,8 +21,8 @@ module.exports = {
         }
 
         const embedFr = new EmbedBuilder()
-            .setColor('#2F3136')
-            .setTitle('Gowrax - Mise au point 🇫🇷')
+            .setColor('#3498db') // Bleu pour la France
+            .setTitle('Gowrax - Mise au point 🇫🇷 (1/2)')
             .setDescription(`Il y a quelques jours, certains d’entre vous ont reçu un message concernant leur volonté de poursuivre l’aventure avec nous.
 
 Aujourd’hui, l’administration de l’équipe souhaite clarifier et renforcer les critères de participation au sein de la structure :
@@ -39,11 +39,13 @@ Si vous savez que vous ne pourrez pas suivre le rythme demandé, merci de nous l
 • **En cas de manque d’implication**
 Si votre participation est jugée insuffisante malgré les attentes liées à votre rôle, des mesures pourront être prises : rappel, changement de rôle ou retrait du roster compétitif si nécessaire.
 
-Ce message a pour but de poser un cadre clair, sérieux et équitable pour tous. Nous voulons avancer avec des membres motivés, investis et alignés avec les ambitions de l’équipe.`);
+Ce message a pour but de poser un cadre clair, sérieux et équitable pour tous. Nous voulons avancer avec des membres motivés, investis et alignés avec les ambitions de l’équipe.
+
+*(🇺🇸 Please scroll down for the English version)*`);
 
         const embedEn = new EmbedBuilder()
-            .setColor('#2F3136')
-            .setTitle('Gowrax - Update 🇬🇧')
+            .setColor('#e74c3c') // Rouge pour l'Angleterre
+            .setTitle('Gowrax - Update 🇬🇧 (2/2)')
             .setDescription(`A few days ago, some of you received a message regarding your willingness to continue this journey with us.
 
 Today, the team staff would like to clarify and strengthen the participation requirements within the team:
