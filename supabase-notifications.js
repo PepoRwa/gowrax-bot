@@ -2,8 +2,8 @@ const { createClient } = require('@supabase/supabase-js');
 const { EmbedBuilder } = require('discord.js');
 
 // Remplacer ces lignes par vos vrais credentials (ou les mettre dans un .env)
-const SUPABASE_URL = process.env.SUPABASE_URL || 'https://hbneliavsrdurolfamjo.supabase.co';
-const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhibmVsaWF2c3JkdXJvbGZhbWpvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3NTAzNzMyMywiZXhwIjoyMDkwNjEzMzIzfQ.hBLwQ1DEh8Jlj6lbCAKgUhgfjvnld5ND4psw4dy4ebA'; 
+const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://hbneliavsrdurolfamjo.supabase.co';
+const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY; 
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 
@@ -64,7 +64,7 @@ module.exports = async (client) => {
 
                     const channelId = channelsMap[notif.target_roster] || channelsMap['Tous'];
 
-                    if (channelId && channelId !== '1482448316699644005') {
+                    if (channelId) {
                         try {
                             const discordChannel = await client.channels.fetch(channelId);
                             if (discordChannel) await discordChannel.send({ embeds: [embed] });
