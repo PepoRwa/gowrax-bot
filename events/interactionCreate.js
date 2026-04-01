@@ -32,7 +32,7 @@ module.exports = {
                 'role_fr': '1483160519966855270', 'role_en': '1483160477109321921'
             };
 
-            if (roleMap[interaction.customId]) {
+            if (roleMap[interaction.customId] && interaction.member) {
                 const roleId = roleMap[interaction.customId];
                 try {
                     if (interaction.member.roles.cache.has(roleId)) {
@@ -48,63 +48,69 @@ module.exports = {
                 }
             }
 
-                if (interaction.customId === 'check_my_roles') {
+            if (interaction.customId === 'check_my_roles' && interaction.member) {
                 const active = Object.values(roleMap)
                     .filter(id => interaction.member.roles.cache.has(id))
                     .map(id => `<@&${id}>`)
                     .join('\n');
                 return interaction.reply({ content: `**Tes rôles actifs :**\n${active || 'Aucun'}`, flags: [64] });
-            }
-
-            // --- A2. VERIFICATION INACTIVITE ---
+            }            // --- A2. VERIFICATION INACTIVITE ---
             if (interaction.customId === 'checkinactif_stop') {
-                const logChannel = interaction.client.channels.cache.get(LOG_INACTIF_ID);
-                if (logChannel) {
-                    const embedLog = new EmbedBuilder()
-                        .setColor('#E74C3C')
-                        .setTitle('🛑 Arrêt de l\'aventure')
-                        .setDescription(`**Joueur :** <@${interaction.user.id}> (${interaction.user.tag})\nIl a décidé de s'arrêter là.`)
-                        .setTimestamp();
-                    await logChannel.send({ embeds: [embedLog] });
+                try {
+                    const logChannel = interaction.client.channels.cache.get(LOG_INACTIF_ID);
+                    if (logChannel) {
+                        const embedLog = new EmbedBuilder()
+                            .setColor('#E74C3C')
+                            .setTitle('🛑 Arrêt de l\'aventure')
+                            .setDescription(`**Joueur :** <@${interaction.user.id}> (${interaction.user.tag})\nIl a décidé de s'arrêter là.`)
+                            .setTimestamp();
+                        await logChannel.send({ embeds: [embedLog] });
+                    }
+                    
+                    await interaction.reply({ content: `✅ Ton choix a bien été enregistré. Merci ! / Your choice have been registered. Thank you !`, ephemeral: true });
+                    
+                    const updatedRow = new ActionRowBuilder().addComponents(
+                        new ButtonBuilder().setCustomId('checkinactif_stop_done').setLabel('Choix enregistré').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                    );
+                    return await interaction.message.edit({ components: [updatedRow] });
+                } catch (err) {
+                    console.error('Erreur checkinactif_stop:', err);
                 }
-                
-                await interaction.reply({ content: `✅ Ton choix a bien été enregistré. Merci ! / Your choice have been registered. Thank you !`, ephemeral: true });
-                
-                const updatedRow = new ActionRowBuilder().addComponents(
-                    new ButtonBuilder().setCustomId('checkinactif_stop_done').setLabel('Choix enregistré').setStyle(ButtonStyle.Secondary).setDisabled(true)
-                );
-                return await interaction.message.edit({ components: [updatedRow] });
             }
 
             if (interaction.customId === 'checkinactif_continue') {
-                const modal = new ModalBuilder()
-                    .setCustomId('modal_checkinactif_continue')
-                    .setTitle('Continuer l\'Aventure / Continue the adventure');
-                
-                const goalsInput = new TextInputBuilder()
-                    .setCustomId('input_goals')
-                    .setLabel('Quels sont tes objectifs ? (FR/EN) / What are your goals? (FR/EN)')
-                    .setStyle(TextInputStyle.Paragraph)
-                    .setPlaceholder('Explique tes objectifs dans l\'équipe... / Describe your goals within the team...')
-                    .setRequired(true);
+                try {
+                    const modal = new ModalBuilder()
+                        .setCustomId('modal_checkinactif_continue')
+                        .setTitle('Continuer l\'Aventure');
+                    
+                    const goalsInput = new TextInputBuilder()
+                        .setCustomId('input_goals')
+                        .setLabel('Tes objectifs ? / Your goals?')
+                        .setStyle(TextInputStyle.Paragraph)
+                        .setPlaceholder('Explique tes objectifs dans l\'équipe... / Explain your goals...')
+                        .setRequired(true);
 
-                const commitInput = new TextInputBuilder()
-                    .setCustomId('input_commit')
-                    .setLabel('T\'engages-tu à être présent ? (Oui/Non/Yes/No) / Do you commit to being present? (Yes/No)')
-                    .setStyle(TextInputStyle.Short)
-                    .setPlaceholder('Oui, je m\'engage / Yes, I commit')
-                    .setRequired(true);
+                    const commitInput = new TextInputBuilder()
+                        .setCustomId('input_commit')
+                        .setLabel('T\'engages-tu à être présent ? (Oui/Yes)')
+                        .setStyle(TextInputStyle.Short)
+                        .setPlaceholder('Oui, je m\'engage / Yes, I commit')
+                        .setRequired(true);
 
-                modal.addComponents(
-                    new ActionRowBuilder().addComponents(goalsInput),
-                    new ActionRowBuilder().addComponents(commitInput)
-                );
-                
-                return await interaction.showModal(modal);
+                    modal.addComponents(
+                        new ActionRowBuilder().addComponents(goalsInput),
+                        new ActionRowBuilder().addComponents(commitInput)
+                    );
+                    
+                    return await interaction.showModal(modal);
+                } catch (err) {
+                    console.error('Erreur checkinactif_continue:', err);
+                }
             }
 
             // --- B. DASHBOARD VOCAL ---
-            if (interaction.customId.startsWith('vocal_')) {
+            if (interaction.customId.startsWith('vocal_') && interaction.member && interaction.member.voice) {
                 const voiceChannel = interaction.member.voice.channel;
                 if (!voiceChannel) return interaction.reply({ content: "❌ Tu dois être dans ton salon vocal.", flags: [64] });
                 // ✅ VÉRIFICATION AVEC LE NOUVEAU BADGE (ManageMessages)
