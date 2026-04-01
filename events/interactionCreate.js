@@ -313,6 +313,83 @@ module.exports = {
                 await interaction.member.voice.channel.setName(`🔊 ${newName}`);
                 return interaction.reply({ content: `✅ Salon renommé : **${newName}**`, flags: [64] });
             }
+
+            // --- A2. VERIFICATION INACTIVITE ---
+            if (interaction.customId === 'checkinactif_stop') {
+                const logChannel = interaction.client.channels.cache.get('1474121475026845807'); // Remplacer par LOG_INACTIF_ID si existant
+                if (logChannel) {
+                    const embedLog = new EmbedBuilder()
+                        .setColor('#E74C3C')
+                        .setTitle('🛑 Arrêt de l\'aventure')
+                        .setDescription(`**Joueur :** <@${interaction.user.id}> (${interaction.user.tag})\nIl a décidé de s'arrêter là.`)
+                        .setTimestamp();
+                    await logChannel.send({ embeds: [embedLog] });
+                }
+                
+                await interaction.reply({ content: `✅ Ton choix a bien été enregistré. Merci pour ta franchise.`, ephemeral: true });
+                
+                const updatedRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('checkinactif_stop_done').setLabel('Choix enregistré').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                );
+                return await interaction.message.edit({ components: [updatedRow] });
+            }
+
+            if (interaction.customId === 'checkinactif_continue') {
+                const modal = new ModalBuilder()
+                    .setCustomId('modal_checkinactif_continue')
+                    .setTitle('Continuer l\'Aventure');
+                
+                const goalsInput = new TextInputBuilder()
+                    .setCustomId('input_goals')
+                    .setLabel('Quels sont tes objectifs ? (FR/EN)')
+                    .setStyle(TextInputStyle.Paragraph)
+                    .setPlaceholder('Explique tes objectifs dans l\'équipe...')
+                    .setRequired(true);
+
+                const commitInput = new TextInputBuilder()
+                    .setCustomId('input_commit')
+                    .setLabel('T\'engages-tu à être présent ? (Oui/Non/Yes/No)')
+                    .setStyle(TextInputStyle.Short)
+                    .setPlaceholder('Oui, je m\'engage')
+                    .setRequired(true);
+
+                modal.addComponents(
+                    new ActionRowBuilder().addComponents(goalsInput),
+                    new ActionRowBuilder().addComponents(commitInput)
+                );
+                
+                return await interaction.showModal(modal);
+            }
+
+            if (interaction.customId === 'modal_checkinactif_continue') {
+                const goals = interaction.fields.getTextInputValue('input_goals');
+                const commit = interaction.fields.getTextInputValue('input_commit').toLowerCase();
+                
+                // Analyse d'engagement via synonymes basiques
+                const ouiSynonyms = ['oui', 'yes', 'o', 'y', 'yep', 'ouais', 'ouep', 'of course', 'bien sûr', 'absolument', 'yeah'];
+                const isCommitted = ouiSynonyms.some(syn => commit.includes(syn));
+
+                const logChannel = interaction.client.channels.cache.get('1474121475026845807'); // Remplacer par LOG_INACTIF_ID si existant
+                if (logChannel) {
+                    const embedLog = new EmbedBuilder()
+                        .setColor('#2ECC71')
+                        .setTitle('✅ Continuité de l\'aventure')
+                        .addFields(
+                            { name: 'Joueur', value: `<@${interaction.user.id}> (${interaction.user.tag})`, inline: true },
+                            { name: 'S\'engage à être présent ?', value: isCommitted ? `🟢 ${commit}` : `🟠 ${commit}`, inline: true },
+                            { name: 'Objectifs', value: goals }
+                        )
+                        .setTimestamp();
+                    await logChannel.send({ embeds: [embedLog] });
+                }
+
+                await interaction.reply({ content: `✅ Merci pour tes réponses. L'équipe a bien pris note de ton engagement ! / Thank you, the team has recorded your commitment!`, ephemeral: true });
+
+                const updatedRow = new ActionRowBuilder().addComponents(
+                    new ButtonBuilder().setCustomId('checkinactif_continue_done').setLabel('Fomulaire soumis').setStyle(ButtonStyle.Secondary).setDisabled(true)
+                );
+                return await interaction.message.edit({ components: [updatedRow] });
+            }
         }
     },
 };
