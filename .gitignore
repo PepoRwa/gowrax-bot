@@ -2,3 +2,5 @@ node_modules/
 .env
 .DS_Store
 tickets.json
+
+a garder.txt
