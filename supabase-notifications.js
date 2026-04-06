@@ -59,7 +59,8 @@ module.exports = async (client) => {
                         'High Roster': '1482448316699644005',
                         'Academy': '1474116136801927290',
                         'Chill': '1474116136801927290',
-                        'Tryhard': '1474116136801927290'
+                        'Tryhard': '1474116136801927290',
+                        'Staff': '1474115207172329674'
                     };
 
                     const channelId = channelsMap[notif.target_roster] || channelsMap['Tous'];

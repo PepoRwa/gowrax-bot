@@ -141,6 +141,17 @@ process.on('SIGINT', async () => {
     process.exit(0);
 });
 
+// --- 6.5 ANTI-CRASH GLOBAL ---
+process.on('unhandledRejection', (reason, promise) => {
+    console.error('💥 [ANTI-CRASH] Unhandled Rejection:', promise, 'raison:', reason);
+});
+process.on('uncaughtException', (err, origin) => {
+    console.error('💥 [ANTI-CRASH] Uncaught Exception:', err, 'origine:', origin);
+});
+process.on('uncaughtExceptionMonitor', (err, origin) => {
+    console.error('💥 [ANTI-CRASH] Uncaught Exception Monitor:', err, 'origine:', origin);
+});
+
 // --- 7. DÉPLOIEMENT AUTO DES COMMANDES SLASH ---
 const { exec } = require('child_process');
 
