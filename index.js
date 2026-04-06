@@ -165,6 +165,49 @@ exec('node deploy-commands.js', (error, stdout, stderr) => {
     console.log(`✅ Résultat du déploiement :\n${stdout}`); 
 });
 
+// --- 7.5 SYNCHRONISATION DISCORD-WEB (RADAR) ---
+const { createClient } = require('@supabase/supabase-js');
+const radarSupabase = createClient(
+    process.env.VITE_SUPABASE_URL || 'https://hbneliavsrdurolfamjo.supabase.co',
+    process.env.SUPABASE_SERVICE_ROLE_KEY
+);
+
+async function syncDiscordToRadar() {
+    console.log('📡 [RADAR] Lancement du scan des membres Discord...');
+    try {
+        const guild = client.guilds.cache.first(); // Prend le premier serveur du bot
+        if (!guild) return console.error('Erreur: Le bot n\'est sur aucun serveur.');
+        
+        await guild.members.fetch(); // Force la récupération de TOUS les membres
+        
+        const cacheData = guild.members.cache
+            .filter(member => !member.user.bot && member.roles.cache.has('1474127750343168247')) // Ignore les bots et filtre par le rôle requis
+            .map(member => ({
+                discord_id: member.id,
+                username: member.user.username,
+                global_name: member.user.globalName || member.user.username,
+                highest_role: member.roles.highest.name,
+                avatar_url: member.user.displayAvatarURL({ extension: 'png' }),
+                joined_at: new Date(member.joinedTimestamp).toISOString(),
+                last_cached_at: new Date().toISOString()
+            }));
+
+        if (cacheData.length > 0) {
+            const { error } = await radarSupabase.from('discord_cache').upsert(cacheData, { onConflict: 'discord_id' });
+            if (error) console.error('❌ Erreur de synchronisation Radar:', error.message);
+            else console.log(`✅ [RADAR] ${cacheData.length} membres synchronisés avec succès vers le Web !`);
+        }
+    } catch (err) {
+        console.error('❌ Erreur Critique lors du scan Discord:', err);
+    }
+}
+
+client.once('ready', () => {
+    syncDiscordToRadar(); // Check direct au démarrage 
+    setInterval(syncDiscordToRadar, 2 * 60 * 60 * 1000); // Refait un check toutes les 2 Heures
+});
+
+
 // --- 8. CONNEXION ---
 client.login(process.env.TOKEN);
 
