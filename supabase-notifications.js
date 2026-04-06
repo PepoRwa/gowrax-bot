@@ -18,10 +18,23 @@ module.exports = async (client) => {
                 const notif = payload.new;
                 console.log('🔔 Nouvelle notification détectée :', notif.title);
 
+                // Couleurs dynamiques selon le type de notification
+                const embedColor = notif.type === 'personal' ? '#6F2DBD' : '#FF9900'; // Violet Gowrax pour Mentorat, Orange pour les Matchs
+
                 const embed = new EmbedBuilder()
-                    .setTitle(`🔔 ${notif.title}`)
-                    .setDescription(notif.message)
-                    .setColor('#FF9900') // Couleur GOWRAX
+                    .setAuthor({ 
+                        name: 'GOWRAX Administration', 
+                        iconURL: client.user.displayAvatarURL(), // Utilise automatiquement l'avatar de ton Bot Discord !
+                        url: 'https://team.gowrax.me/' // Lien cliquable sur le nom de l'auteur
+                    })
+                    .setTitle(notif.title)
+                    .setDescription(`${notif.message}\n\n🔗 **[Accéder à la plateforme GOWRAX](https://team.gowrax.me/)**`)
+                    .setColor(embedColor)
+                    .setThumbnail(client.user.displayAvatarURL()) // Mini-logo en haut à droite de l'embed
+                    .setFooter({ 
+                        text: 'Système Automatisé • GOWRAX', 
+                        iconURL: client.user.displayAvatarURL() 
+                    })
                     .setTimestamp();
 
                 // 1. Notification Personnelle (envoyée en DM)
