@@ -180,17 +180,26 @@ async function syncDiscordToRadar() {
         
         await guild.members.fetch(); // Force la récupération de TOUS les membres
         
+        const ignoredRoles = ['1472731688957251748', '1472732357806264465', '1472732894567858368'];
+
         const cacheData = guild.members.cache
             .filter(member => !member.user.bot && member.roles.cache.has('1474127750343168247')) // Ignore les bots et filtre par le rôle requis
-            .map(member => ({
-                discord_id: member.id,
-                username: member.user.username,
-                global_name: member.user.globalName || member.user.username,
-                highest_role: member.roles.highest.name,
-                avatar_url: member.user.displayAvatarURL({ extension: 'png' }),
-                joined_at: new Date(member.joinedTimestamp).toISOString(),
-                last_cached_at: new Date().toISOString()
-            }));
+            .map(member => {
+                // Filtre les rôles ignorés et le rôle @everyone (qui possède l'ID de la guild)
+                const validRoles = member.roles.cache.filter(role => !ignoredRoles.includes(role.id) && role.id !== guild.id);
+                // Trie par position décroissante pour avoir le plus haut en premier
+                const realHighestRole = validRoles.sort((a, b) => b.position - a.position).first();
+
+                return {
+                    discord_id: member.id,
+                    username: member.user.username,
+                    global_name: member.user.globalName || member.user.username,
+                    highest_role: realHighestRole ? realHighestRole.name : 'Aucun rôle',
+                    avatar_url: member.user.displayAvatarURL({ extension: 'png' }),
+                    joined_at: new Date(member.joinedTimestamp).toISOString(),
+                    last_cached_at: new Date().toISOString()
+                };
+            });
 
         if (cacheData.length > 0) {
             const { error } = await radarSupabase.from('discord_cache').upsert(cacheData, { onConflict: 'discord_id' });
