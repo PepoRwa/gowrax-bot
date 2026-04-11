@@ -24,7 +24,7 @@ module.exports = {
         const target = interaction.options.getUser('membre');
         const statut = interaction.options.getString('statut');
         const raison = interaction.options.getString('raison') || "Aucune précision supplémentaire.";
-        const logChannelId = "TON_ID_SALON_LOGS"; // À remplacer par ton ID de salon logs
+        const logChannelId = "1472553125796778128"; // À remplacer par ton ID de salon logs
 
         // --- Configuration des messages diplomatiques ---
         const messages = {
