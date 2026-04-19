@@ -53,7 +53,7 @@ module.exports = async (client) => {
                         }
                     } else {
                         // On doit retrouver le profil dans Supabase
-                        const { data: profile } = await supabase.from('profiles').select('discord_id').eq('id', notif.user_id).single();
+                        const { data: profile } = await supabase.from('v_profiles').select('discord_id').eq('id', notif.user_id).single();
                         if (profile && profile.discord_id) {
                             try {
                                 const user = await client.users.fetch(profile.discord_id);

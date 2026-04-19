@@ -1,4 +1,5 @@
 const { Client, GatewayIntentBits, Collection, Partials, EmbedBuilder } = require('discord.js');
+const { createClient } = require('@supabase/supabase-js');
 const fs = require('fs');
 const path = require('path');
 require('dotenv').config();
@@ -166,7 +167,6 @@ exec('node deploy-commands.js', (error, stdout, stderr) => {
 });
 
 // --- 7.5 SYNCHRONISATION DISCORD-WEB (RADAR) ---
-const { createClient } = require('@supabase/supabase-js');
 const radarSupabase = createClient(
     process.env.VITE_SUPABASE_URL || 'https://hbneliavsrdurolfamjo.supabase.co',
     process.env.SUPABASE_SERVICE_ROLE_KEY
