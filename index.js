@@ -6,6 +6,7 @@ require('dotenv').config();
 const cron = require('node-cron');
 const supabaseNotifications = require('./supabase-notifications.js');
 // const pool = require('./database.js');
+// A mettre à jour :3
 
 // --- 1. CONFIGURATION DU CLIENT ---
 const client = new Client({
