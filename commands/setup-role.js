@@ -17,6 +17,7 @@ module.exports = {
             new ButtonBuilder().setCustomId('role_annonces').setLabel('Annonces').setEmoji('📢').setStyle(ButtonStyle.Secondary),
             new ButtonBuilder().setCustomId('role_events').setLabel('Events').setEmoji('🎉').setStyle(ButtonStyle.Secondary),
             new ButtonBuilder().setCustomId('role_videos').setLabel('Vidéos').setEmoji('🎬').setStyle(ButtonStyle.Secondary),
+            new ButtonBuilder().setCustomId('role_posts').setLabel('Posts').setEmoji('💜').setStyle(ButtonStyle.Secondary),
         );
 
         // --- EMBED 2 : ESPORT ---

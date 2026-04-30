@@ -34,7 +34,7 @@ module.exports = {
 
         // 1. On cherche le joueur dans Supabase
         const { data: profile } = await supabase
-            .from('v_profiles')
+            .from('profiles')
             .select('id')
             .eq('discord_id', newMember.user.id)
             .single();
