@@ -1,33 +1,21 @@
 const { REST, Routes } = require('discord.js');
-require('dotenv').config();
-const fs = require('fs');
-const path = require('path');
+const config = require('./src/config');
+const { loadCommands } = require('./src/loaders/commands');
 
-const commands = [];
-const commandsPath = path.join(__dirname, 'commands');
-const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.js'));
-
-for (const file of commandFiles) {
-    const filePath = path.join(commandsPath, file);
-    const command = require(filePath);
-    if ('data' in command && 'execute' in command) {
-        commands.push(command.data.toJSON());
-    }
-}
-
-const rest = new REST().setToken(process.env.TOKEN);
+const commands = [...loadCommands().values()].map((c) => c.data.toJSON());
+const rest = new REST({ version: '10' }).setToken(config.discord.token);
 
 (async () => {
-    try {
-        console.log(`🚀 Début du rafraîchissement de ${commands.length} commandes slash.`);
-
-        const data = await rest.put(
-            Routes.applicationGuildCommands(process.env.CLIENT_ID, process.env.GUILD_ID),
-            { body: commands },
-        );
-
-        console.log(`✅ ${data.length} commandes slash enregistrées avec succès pour le serveur de test.`);
-    } catch (error) {
-        console.error(error);
-    }
+  try {
+    console.log(`⏳ Déploiement de ${commands.length} commandes…`);
+    await rest.put(
+      Routes.applicationGuildCommands(config.discord.clientId, config.discord.guildId),
+      { body: commands }
+    );
+    console.log('✅ Commandes déployées.');
+    process.exit(0);
+  } catch (err) {
+    console.error('❌ Erreur déploiement:', err);
+    process.exit(1);
+  }
 })();
