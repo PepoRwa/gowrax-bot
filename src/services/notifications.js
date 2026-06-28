@@ -1,5 +1,6 @@
 const pool = require('../db/pool');
 const { buildEmbedFromPayload, defaultEmbed, resolveChannelId, resolveMentionRole } = require('../utils/embeds');
+const { reportDbOk, reportDbError } = require('../utils/presence');
 
 async function fetchPending(limit = 20) {
   const [rows] = await pool.query(
@@ -66,8 +67,10 @@ async function startNotificationPoller(client) {
           await markError(row.id, err.message);
         }
       }
+      await reportDbOk(client);
     } catch (err) {
       console.error('❌ Erreur poll notifications:', err.message);
+      await reportDbError(client, err);
     }
   }
 

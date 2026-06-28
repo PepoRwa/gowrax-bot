@@ -15,7 +15,12 @@ async function deployCommands() {
 }
 
 async function main() {
-  await runMigrations();
+  try {
+    await runMigrations();
+  } catch (err) {
+    console.error('❌ DB / migrations:', err.message);
+  }
+
   await deployCommands();
 
   const client = new Client({
